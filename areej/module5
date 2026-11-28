@@ -1,0 +1,50 @@
+;clears old screen and displays updated game screen
+
+ClearFrame:
+        push    bp
+        mov     bp, sp
+        push    ax
+        push    bx
+        push    cx
+        push    dx
+        push    si
+        push    di
+        push    es
+        mov     es, [fb_seg]
+        xor     di, di
+        mov     al, [bp + 4]
+        mov     ah, al
+        mov     cx, SCREEN_W*SCREEN_H/2
+        rep     stosw
+        pop     es
+        pop     di
+        pop     si
+        pop     dx
+        pop     cx
+        pop     bx
+        pop     ax
+        pop     bp
+        ret     2
+
+; copy the finished frame buffer to video
+
+
+PresentFrame:
+        push    ax
+        push    bx
+        push    cx
+        push    dx
+        push    si
+        push    di
+        push    bp
+        push    ds
+        push    es
+        mov     dx, 3DAh
+        mov     cx, 0FFFFh
+
+        
+PresentFrame_wait_end:
+        in      al, dx
+        test    al, 8
+        jz      retrace_exit_1
+        loop    PresentFrame_wait_end
